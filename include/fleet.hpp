@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 #include <ostream>
+#include <unordered_map>
+#include <queue>
 
 class Fleet {
 public:
@@ -26,7 +28,10 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Fleet& f);
 
 private:
-    // Choose the right containers and justify each choice in a comment.
-    // Hint: robots need fast lookup by id.
-    // Hint: tasks must always come out highest priority first.
+    // unordered_map: O(1) average lookup by id 
+    // shared_ptr: a robot can be referenced outside the fleet; unique_ptr would prevent that shared ownership.
+    std::unordered_map<std::string, std::shared_ptr<Robot>> robots_;
+
+    // priority_queue: max-heap built on a vector; top() is always the highest-priority task. Task::operator< is defined so higher value = higher rank.
+    std::priority_queue<Task> tasks_;
 };
