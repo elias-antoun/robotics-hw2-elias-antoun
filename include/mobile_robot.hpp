@@ -8,6 +8,8 @@ public:
     MobileRobot(const std::string& id, const std::string& name,
                 int battery, double speed);
 
+    ~MobileRobot(); 
+
     void        work()  override;  // moves, uses 20% battery
     std::string type()  const override;
 

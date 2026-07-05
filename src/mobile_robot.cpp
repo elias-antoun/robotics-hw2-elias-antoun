@@ -5,8 +5,8 @@
 #include <algorithm>  
 
 MobileRobot::MobileRobot(const std::string& id, const std::string& name,
-            int battery, double speed);
-            : Robot(id,name,battery), speed_(speed) {}
+            int battery, double speed)
+            : Robot(id, name, battery), speed_(speed) {}
 void MobileRobot::work(){
     if(battery_==0)
         throw std::runtime_error(name_ + " cannot work: battery is empty");
@@ -14,14 +14,17 @@ void MobileRobot::work(){
     status_ = "working";
     std::cout << name_ << " is moving at " << speed_ << " m/s. Battery: " << battery_ << "%\n";
 }
-std::string MobileRobot::type()  const {return "MobileRobot";}
+std::string MobileRobot::type() const { return "MobileRobot"; }
 
-void MobileRobot::start_work(int seconds);
+MobileRobot::~MobileRobot() {
+    stop_ = true;
+    if (worker_.joinable()) worker_.join();
+}
 
 void MobileRobot::start_work(int seconds) {
-    stop_ = false;
-    // Join any previous thread before launching a new one
-    if (worker_.joinable()) worker_.join();
+    stop_ = true;                            // signal any running thread to exit its loop
+    if (worker_.joinable()) worker_.join();  // wait for it to actually finish
+    stop_ = false;                           // reset flag for the new thread
 
     worker_ = std::thread([this, seconds]() {
         for (int i = 0; i < seconds && !stop_; ++i) {
